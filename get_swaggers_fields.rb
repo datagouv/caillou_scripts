@@ -1,4 +1,5 @@
 require "openapi3_parser"
+require "csv"
 
 SWAGGER_URLS = {
   api_particulier: "https://particulier.api.gouv.fr/open-api-without-deprecated-paths.yml",
@@ -19,9 +20,21 @@ class Swagger
     fields_per_paths = @content.paths.map do |path, path_content|
       schema = path_content.get.responses['200'].content["application/json"].schema
       properties = extract_properties(schema)
-      properties.map{|p| [path, p].join("\t")}
+      [path, properties]
+    end.to_h
+  end
+
+  def extract_fields_csv
+    fields_per_paths = extract_fields
+
+    CSV.generate(col_sep: "\t") do |csv|
+      csv << ["Path", "Title", "Parents", "Type", "Description", "Example"]
+      fields_per_paths.each do |path, fields|
+        fields.each do |field|
+          csv << [path, field[:title], field[:parent], field[:type], field[:description], field[:example]]
+        end
+      end
     end
-    fields_per_paths
   end
 
   private
@@ -99,7 +112,8 @@ class Swagger
   end
 end
 
-
 # Example usage
 swagger = Swagger.new(SWAGGER_URLS[:api_particulier])
-print swagger.extract_fields.join("\n")
+print swagger.extract_fields_csv
+
+
