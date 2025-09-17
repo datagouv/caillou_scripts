@@ -1,0 +1,3 @@
+# Caillou's scripts
+
+\o/
