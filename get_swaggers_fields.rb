@@ -30,30 +30,33 @@ class Swagger
     recursive_extract_properties(schema, [])
   end
 
-  def recursive_extract_properties(schema, properties)
+  def recursive_extract_properties(schema, properties, parent_info = nil)
     return properties unless schema
     
     # Handle schema with properties (object type)
     if schema.respond_to?(:properties) && schema.properties
       schema.properties.each do |prop_name, prop_schema|
+        leaf_property = prop_schema.to_h
+        leaf_property["parent"] = parent_info
+        
         # Only add properties that are leaf-level (no nested properties)
         if interesting_properties(prop_schema) && !has_nested_properties(prop_schema)
-          properties << prop_schema.to_h
+          properties << leaf_property
         end
         
-        # Recursively extract nested properties
-        recursive_extract_properties(prop_schema, properties)
+        # Recursively extract nested properties with updated parent info
+        recursive_extract_properties(prop_schema, properties, leaf_property)
       end
     # Handle array schemas
     elsif schema.respond_to?(:items) && schema.items
-      recursive_extract_properties(schema.items, properties)
+      recursive_extract_properties(schema.items, properties, parent_info)
     # Handle schema composition (allOf, oneOf, anyOf)
     elsif schema.respond_to?(:all_of) && schema.all_of
-      schema.all_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties) }
+      schema.all_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties, parent_info) }
     elsif schema.respond_to?(:one_of) && schema.one_of
-      schema.one_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties) }
+      schema.one_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties, parent_info) }
     elsif schema.respond_to?(:any_of) && schema.any_of
-      schema.any_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties) }
+      schema.any_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties, parent_info) }
     end
     
     properties
