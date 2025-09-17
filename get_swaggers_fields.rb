@@ -1,12 +1,7 @@
 require "openapi3_parser"
 require "csv"
 
-SWAGGER_URLS = {
-  api_particulier: "https://particulier.api.gouv.fr/open-api-without-deprecated-paths.yml",
-  api_entreprise: "https://entreprise.api.gouv.fr/open-api-without-deprecated-paths.yml",
-}
-
-class Swagger
+class SwaggerExtractor
   def initialize(swagger_url)
     @swagger_url = swagger_url
     @content = get_content
@@ -112,8 +107,18 @@ class Swagger
   end
 end
 
+SWAGGER_URLS = {
+  api_particulier: "https://particulier.api.gouv.fr/open-api-without-deprecated-paths.yml",
+  # api_entreprise: "https://entreprise.api.gouv.fr/open-api-without-deprecated-paths.yml",
+}
+
 # Example usage
-swagger = Swagger.new(SWAGGER_URLS[:api_particulier])
-print swagger.extract_fields_csv
+
+SWAGGER_URLS.each do |name, url|
+  swagger_extractor = SwaggerExtractor.new(url)
+  csv = swagger_extractor.extract_fields_csv
+  File.write("swagger_fields_#{name}.tsv", csv)
+end
+
 
 
