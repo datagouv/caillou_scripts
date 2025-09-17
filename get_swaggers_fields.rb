@@ -16,11 +16,12 @@ class Swagger
   end
 
   def extract_fields
-    @content.paths.map do |path, path_content|
+    fields_per_paths = @content.paths.map do |path, path_content|
       schema = path_content.get.responses['200'].content["application/json"].schema
       properties = extract_properties(schema)
-      { path: path, properties: properties }
+      properties.map{|p| [path, p].join("\t")}
     end
+    fields_per_paths
   end
 
   private
@@ -30,11 +31,36 @@ class Swagger
   end
 
   def recursive_extract_properties(schema, properties)
-    if schema.keys.include?("properties")
-      recursive_extract_properties(schema.properties, properties)
-    else
-      properties += schema.values.map(&:to_h)
+    return properties unless schema
+    
+    # Handle schema with properties (object type)
+    if schema.respond_to?(:properties) && schema.properties
+      schema.properties.each do |prop_name, prop_schema|
+        # Add the property itself
+        properties << {
+          name: prop_name,
+          type: prop_schema.type,
+          title: prop_schema.title,
+          description: prop_schema.description,
+          required: schema.required&.include?(prop_name) || false
+        }
+        
+        # Recursively extract nested properties
+        recursive_extract_properties(prop_schema, properties)
+      end
+    # Handle array schemas
+    elsif schema.respond_to?(:items) && schema.items
+      recursive_extract_properties(schema.items, properties)
+    # Handle schema composition (allOf, oneOf, anyOf)
+    elsif schema.respond_to?(:all_of) && schema.all_of
+      schema.all_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties) }
+    elsif schema.respond_to?(:one_of) && schema.one_of
+      schema.one_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties) }
+    elsif schema.respond_to?(:any_of) && schema.any_of
+      schema.any_of.each { |sub_schema| recursive_extract_properties(sub_schema, properties) }
     end
+    
+    properties
   end
 
   def get_content
@@ -43,5 +69,6 @@ class Swagger
 end
 
 
+# Example usage
 swagger = Swagger.new(SWAGGER_URLS[:api_particulier])
-p swagger.extract_fields
+print swagger.extract_fields.join("\n")
