@@ -1,0 +1,28 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    commonmarker (2.4.0-aarch64-linux)
+    commonmarker (2.4.0-aarch64-linux-musl)
+    commonmarker (2.4.0-arm64-darwin)
+    commonmarker (2.4.0-x86_64-darwin)
+    commonmarker (2.4.0-x86_64-linux)
+    commonmarker (2.4.0-x86_64-linux-musl)
+    openapi3_parser (0.10.1)
+      commonmarker (>= 1.0)
+
+PLATFORMS
+  aarch64-linux
+  aarch64-linux-musl
+  arm64-darwin
+  x86_64-darwin
+  x86_64-linux
+  x86_64-linux-musl
+
+DEPENDENCIES
+  openapi3_parser
+
+RUBY VERSION
+   ruby 3.4.5p51
+
+BUNDLED WITH
+   2.6.9
