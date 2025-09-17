@@ -13,10 +13,15 @@ class SwaggerExtractor
 
   def extract_fields
     fields_per_paths = @content.paths.map do |path, path_content|
-      schema = path_content.get.responses['200'].content["application/json"].schema
+      ok_response_content = path_content.get.responses['200'].content["application/json"]
+      next if ok_response_content.nil?
+
+      schema = ok_response_content.schema
       properties = extract_properties(schema)
+      next if properties.empty?
+      
       [path, properties]
-    end.to_h
+    end.compact.to_h
   end
 
   def extract_fields_csv
@@ -109,7 +114,7 @@ end
 
 SWAGGER_URLS = {
   api_particulier: "https://particulier.api.gouv.fr/open-api-without-deprecated-paths.yml",
-  # api_entreprise: "https://entreprise.api.gouv.fr/open-api-without-deprecated-paths.yml",
+  api_entreprise: "https://entreprise.api.gouv.fr/open-api-without-deprecated-paths.yml",
 }
 
 # Example usage
