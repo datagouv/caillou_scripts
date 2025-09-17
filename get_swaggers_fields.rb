@@ -27,7 +27,8 @@ class Swagger
   private
 
   def extract_properties(schema)
-    recursive_extract_properties(schema, [])
+    properties = recursive_extract_properties(schema, [])
+    properties.map{|p| format_property(p)}
   end
 
   def recursive_extract_properties(schema, properties, parent_info = nil)
@@ -60,6 +61,26 @@ class Swagger
     end
     
     properties
+  end
+
+  def format_property(leaf_property)
+    {
+      title: leaf_property["title"],
+      parent: leaf_property["parent"] ? full_nested_title(leaf_property["parent"]) : nil,
+      type: leaf_property["type"],
+      description: leaf_property["description"],
+      example: leaf_property["example"],
+    }
+  end
+
+  def full_nested_title(leaf_property)
+    titles = []
+    if leaf_property["parent"]
+      parent_title = full_nested_title(leaf_property["parent"])
+      titles << parent_title unless parent_title.empty?
+    end
+    titles << leaf_property["title"]
+    titles.join(" > ")
   end
 
   def interesting_properties(prop_schema)
