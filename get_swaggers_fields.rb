@@ -36,8 +36,8 @@ class Swagger
     # Handle schema with properties (object type)
     if schema.respond_to?(:properties) && schema.properties
       schema.properties.each do |prop_name, prop_schema|
-        # Add the property itself
-        if interesting_properties(prop_schema)
+        # Only add properties that are leaf-level (no nested properties)
+        if interesting_properties(prop_schema) && !has_nested_properties(prop_schema)
           properties << prop_schema.to_h
         end
         
@@ -62,6 +62,12 @@ class Swagger
   def interesting_properties(prop_schema)
     prop_schema.respond_to?(:type) && prop_schema.type && 
     prop_schema.respond_to?(:title) && prop_schema.title
+  end
+
+  def has_nested_properties(prop_schema)
+    # Check if the property has nested properties (is a container object)
+    prop_schema.respond_to?(:properties) && prop_schema.properties && 
+    prop_schema.properties.any?
   end
 
   def get_content
