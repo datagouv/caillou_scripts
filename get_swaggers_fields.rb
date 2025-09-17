@@ -37,13 +37,9 @@ class Swagger
     if schema.respond_to?(:properties) && schema.properties
       schema.properties.each do |prop_name, prop_schema|
         # Add the property itself
-        properties << {
-          name: prop_name,
-          type: prop_schema.type,
-          title: prop_schema.title,
-          description: prop_schema.description,
-          required: schema.required&.include?(prop_name) || false
-        }
+        if interesting_properties(prop_schema)
+          properties << prop_schema.to_h
+        end
         
         # Recursively extract nested properties
         recursive_extract_properties(prop_schema, properties)
@@ -61,6 +57,11 @@ class Swagger
     end
     
     properties
+  end
+
+  def interesting_properties(prop_schema)
+    prop_schema.respond_to?(:type) && prop_schema.type && 
+    prop_schema.respond_to?(:title) && prop_schema.title
   end
 
   def get_content
