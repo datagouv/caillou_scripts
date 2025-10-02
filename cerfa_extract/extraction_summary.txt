@@ -1,0 +1,20 @@
+CERFA Forms Extraction Summary
+=============================
+
+Total forms extracted: 827
+Extraction date: 2025-10-01 10:54:45
+
+Forms with CERFA numbers: 588
+Unique form numbers: 481
+
+Sample forms:
+1. Demande d'attestation d'accueil (No number)
+2. Demande d'inscription sur les listes électorales (No number)
+3. Demande de certificat d'immatriculation d'un véhicule (No number)
+4. Déclaration 2025 des revenus 2024 (papier) (Formulaire 10330) (10330)
+5. Fonctionnaire de l'État, magistrat ou militaire décédé en activité - Demande de pension de réversion et de rente d’éducation ou handicap (Formulaire 12231*08) (12231*08)
+6. Demande de prise en charge d'hospitalisation au titre de l'article L.212-1 du code des pensions militaires d'invalidité et des victimes de guerre (CPMIVG) (Formulaire 14448*04) (14448*04)
+7. Déclaration de contrat de prêt (Formulaire 10142) (10142)
+8. Déclaration récapitulative des opérations sur valeurs mobilières et revenus de capitaux mobiliers (Formulaire 11428) (11428)
+9. Déclarer son médecin traitant (Formulaire 12485*03) (12485*03)
+10. Premier certificat de santé (Formulaire 12596*04) (12596*04)
