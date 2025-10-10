@@ -4,6 +4,7 @@ echo "Push simplifions-preprod branch"
 git co main
 git pull origin main
 git branch -D simplifions-preprod
+git co -b simplifions-preprod
 git push origin simplifions-preprod -f
 
 echo "Deploy simplifions-prod branch"
